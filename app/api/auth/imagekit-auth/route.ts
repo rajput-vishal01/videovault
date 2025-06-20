@@ -12,6 +12,7 @@ export async function GET() {
       publicKey: process.env.NEXT_PUBLIC_PUBLIC_KEY,
     });
   } catch (error) {
+    console.log("Error In imagekit route.ts", error);
     return Response.json(
       {
         error: "Authentication for Imagekit failed",
