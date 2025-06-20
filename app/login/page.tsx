@@ -19,27 +19,21 @@ const LoginPage = () => {
     setIsLoading(true);
 
     try {
-      console.log("Attempting login with:", { email, password: "***" });
-
       const result = await signIn("credentials", {
         email,
         password,
         redirect: false,
       });
 
-      console.log("Login result:", result);
-
       if (result?.error) {
-        console.error("Login error:", result.error);
         setError("Invalid email or password");
       } else if (result?.ok) {
-        console.log("Login successful, redirecting...");
         router.push("/");
       } else {
         setError("Login failed. Please try again.");
       }
     } catch (error) {
-      console.error("Login error:", error);
+      console.error("Error in login component", error);
       setError("An unexpected error occurred");
     } finally {
       setIsLoading(false);
@@ -47,42 +41,44 @@ const LoginPage = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-800 via-gray-800 to-emerald-900 p-4">
-      <div className="w-full max-w-md">
-        <div className="bg-slate-900/80 backdrop-blur-sm rounded-2xl shadow-xl border border-emerald-800/30 p-8">
+    <div className="min-h-screen bg-white flex items-center justify-center p-4">
+      <div className="w-full max-w-sm">
+        <div className="bg-white border border-gray-200 rounded-lg p-8 shadow-sm">
           <div className="text-center mb-8">
-            <div className="w-16 h-16 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-full flex items-center justify-center mx-auto mb-4">
-              <LogIn className="w-8 h-8 text-white" />
+            <div className="w-12 h-12 bg-black rounded-full flex items-center justify-center mx-auto mb-6">
+              <LogIn className="w-6 h-6 text-white" />
             </div>
-            <h1 className="text-2xl font-bold text-slate-100 mb-2">
-              Welcome Back
+            <h1 className="text-2xl font-semibold text-gray-900 mb-2">
+              Welcome back
             </h1>
-            <p className="text-slate-300">Sign in to your account</p>
+            <p className="text-gray-600 text-sm">
+              Enter your credentials to access your account
+            </p>
           </div>
 
           {error && (
-            <div className="mb-4 p-3 bg-red-900/20 border border-red-800/30 rounded-lg text-red-300 text-sm">
+            <div className="mb-6 p-3 bg-red-50 border border-red-200 rounded-md text-sm text-red-600">
               {error}
             </div>
           )}
 
-          <form onSubmit={handleSubmit} className="space-y-6">
+          <form onSubmit={handleSubmit} className="space-y-4">
             <div>
               <label
                 htmlFor="email"
-                className="block text-sm font-medium text-slate-200 mb-2">
-                Email Address
+                className="block text-sm font-medium text-gray-900 mb-2">
+                Email
               </label>
               <div className="relative">
-                <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-slate-400" />
+                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                 <input
                   id="email"
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
-                  className="w-full pl-10 pr-4 py-3 border border-slate-600 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all duration-200 bg-slate-800/50 text-slate-100 placeholder-slate-400"
-                  placeholder="Enter your email"
+                  className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent transition-all text-sm placeholder-gray-500"
+                  placeholder="you@example.com"
                 />
               </div>
             </div>
@@ -90,28 +86,28 @@ const LoginPage = () => {
             <div>
               <label
                 htmlFor="password"
-                className="block text-sm font-medium text-slate-200 mb-2">
+                className="block text-sm font-medium text-gray-900 mb-2">
                 Password
               </label>
               <div className="relative">
-                <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-slate-400" />
+                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                 <input
                   id="password"
                   type={showPassword ? "text" : "password"}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
-                  className="w-full pl-10 pr-12 py-3 border border-slate-600 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all duration-200 bg-slate-800/50 text-slate-100 placeholder-slate-400"
+                  className="w-full pl-10 pr-12 py-2.5 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent transition-all text-sm placeholder-gray-500"
                   placeholder="Enter your password"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-slate-400 hover:text-emerald-400 transition-colors">
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors">
                   {showPassword ? (
-                    <EyeOff className="w-5 h-5" />
+                    <EyeOff className="w-4 h-4" />
                   ) : (
-                    <Eye className="w-5 h-5" />
+                    <Eye className="w-4 h-4" />
                   )}
                 </button>
               </div>
@@ -120,25 +116,25 @@ const LoginPage = () => {
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full bg-gradient-to-r from-emerald-500 to-teal-500 text-white py-3 px-4 rounded-lg hover:from-emerald-600 hover:to-teal-600 focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 transition-all duration-200 font-medium disabled:opacity-50 disabled:cursor-not-allowed">
+              className="w-full mt-6 py-2.5 px-4 bg-black text-white rounded-md hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-2 transition-all font-medium text-sm disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-black">
               {isLoading ? (
                 <div className="flex items-center justify-center">
-                  <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
-                  Signing In...
+                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
+                  Signing in...
                 </div>
               ) : (
-                "Sign In"
+                "Sign in"
               )}
             </button>
           </form>
 
-          <div className="mt-6 text-center">
-            <p className="text-slate-300">
+          <div className="mt-8 text-center">
+            <p className="text-sm text-gray-600">
               Don't have an account?{" "}
               <button
                 onClick={() => router.push("/register")}
-                className="text-emerald-400 hover:text-emerald-300 font-medium transition-colors">
-                Create Account
+                className="font-medium text-black hover:underline transition-all">
+                Sign up
               </button>
             </p>
           </div>
