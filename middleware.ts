@@ -2,8 +2,26 @@ import { withAuth } from "next-auth/middleware";
 import { NextResponse } from "next/server";
 
 export default withAuth(
-  function middleware() {
-    return NextResponse.next();
+  function middleware(req) {
+    const { pathname } = req.nextUrl;
+
+    // Allow public assets and images
+    if (
+      pathname.startsWith("/api/auth") ||
+      pathname === "/login" ||
+      pathname === "/register" ||
+      pathname.startsWith("/images/") ||
+      pathname.startsWith("/_next/") ||
+      pathname === "/favicon.ico"
+    ) {
+      return NextResponse.next();
+    }
+
+    if (req.nextauth.token) {
+      return NextResponse.next();
+    }
+
+    return NextResponse.redirect(new URL("/login", req.url));
   },
   {
     callbacks: {
@@ -12,18 +30,18 @@ export default withAuth(
         if (
           pathname.startsWith("/api/auth") ||
           pathname === "/login" ||
-          pathname === "/register"
+          pathname === "/register" ||
+          pathname.startsWith("/images/") ||
+          pathname.startsWith("/_next/") 
         ) {
           return true;
         }
-        if (!token) {
-          return false; 
-        }
-        return true;
+
+        return !!token;
       },
     },
     pages: {
-      signIn: "/register",
+      signIn: "/login",
     },
   }
 );
@@ -35,8 +53,9 @@ export const config = {
      * - _next/static (static files)
      * - _next/image (image optimization files)
      * - favicon.ico (favicon file)
-     * - public folder
+     * - images folder (your static images)
+     * - api/auth (NextAuth routes)
      */
-    "/((?!_next/static|_next/image|favicon.ico|public/).*)",
+    "/((?!_next/static|_next/image|favicon.ico|images/).*)",
   ],
 };
