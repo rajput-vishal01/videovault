@@ -1,12 +1,13 @@
 import mongoose, { Schema, model, models } from "mongoose";
 
 export const VIDEO_DIMENSIONS = {
-  heigth: 1920,
-  width: 1080,
+  height: 1080,
+  width: 1920,
 } as const;
 
 export interface Video {
   _id?: mongoose.Types.ObjectId;
+  userId: mongoose.Types.ObjectId;
   title: string;
   description: string;
   videoUrl: string;
@@ -20,13 +21,14 @@ export interface Video {
 }
 const videoSchema = new Schema<Video>(
   {
+    userId: { type: Schema.Types.ObjectId, ref: "User", required: true },
     title: { type: String, required: true },
     description: { type: String, required: true },
     videoUrl: { type: String, required: true },
     thumbnailUrl: { type: String, required: true },
     controls: { type: Boolean, default: true },
     transformation: {
-      height: { type: Number, default: VIDEO_DIMENSIONS.heigth },
+      height: { type: Number, default: VIDEO_DIMENSIONS.height },
       width: { type: Number, default: VIDEO_DIMENSIONS.width },
       quality: { type: Number, min: 1, max: 100 }, //comes from imagekit.io
     },
