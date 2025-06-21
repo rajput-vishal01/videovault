@@ -76,7 +76,9 @@ export default function VideoComponent({ video }: { video: IVideo }) {
           <div className="flex items-center gap-1">
             <User className="w-4 h-4" />
             <span className="font-medium">
-              {video.userId?.email?.split("@")[0] ?? "Unknown"}
+              {typeof video.userId === 'object' && 'email' in video.userId 
+                ? video.userId.email?.split("@")[0] 
+                : "Unknown"}
             </span>
           </div>
           <div className="flex items-center gap-1">

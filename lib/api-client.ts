@@ -2,7 +2,7 @@ import { Video as IVideo } from "@/models/Video";
 
 export type VideoFormData = Pick<
   IVideo,
-  "title" | "description" | "videoUrl" | "controls" | "transformation"
+  "title" | "description" | "videoUrl" | "controls" | "transformation" | "tags"
 >;
 
 type FetchOptions = {

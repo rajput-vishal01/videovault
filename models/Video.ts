@@ -5,9 +5,17 @@ export const VIDEO_DIMENSIONS = {
   width: 1920,
 } as const;
 
+
+export interface User {
+  _id: mongoose.Types.ObjectId;
+  email: string;
+  name?: string;
+
+}
+
 export interface Video {
   _id?: mongoose.Types.ObjectId;
-  userId: mongoose.Types.ObjectId;
+  userId: mongoose.Types.ObjectId | User; //being populated User
   title: string;
   description: string;
   videoUrl: string;
@@ -18,7 +26,11 @@ export interface Video {
     width: number;
     quality?: number;
   };
+  createdAt: string;
+  updatedAt?: string;
+  tags?: string[];
 }
+
 const videoSchema = new Schema<Video>(
   {
     userId: { type: Schema.Types.ObjectId, ref: "User", required: true },

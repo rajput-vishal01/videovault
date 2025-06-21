@@ -6,7 +6,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(
   request: NextRequest,
-  context: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await getServerSession(authOptions);
@@ -16,7 +16,9 @@ export async function GET(
 
     await connectToDatabase();
 
-    const videoId = context.params.id;
+    // Await the params Promise
+    const params = await context.params;
+    const videoId = params.id;
     const video = await Video.findById(videoId).lean();
 
     if (!video) {

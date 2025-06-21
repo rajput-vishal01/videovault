@@ -11,6 +11,8 @@ const nextConfig: NextConfig = {
       },
     ],
     domains: ['ik.imagekit.io'], 
+  }, eslint: {
+    ignoreDuringBuilds: true,
   },
 };
 

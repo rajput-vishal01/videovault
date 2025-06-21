@@ -42,6 +42,7 @@ export default function Header() {
   const toggleDropdown = () => setIsDropdownOpen(!isDropdownOpen);
 
   // Only show header if user has a session
+  if (status === "loading") return null;
   if (!session) return null;
 
   return (
@@ -81,38 +82,30 @@ export default function Header() {
 
               {isDropdownOpen && (
                 <div className="absolute right-0 mt-2 w-64 bg-white rounded-lg border border-gray-200 shadow-lg overflow-hidden z-50">
-                  {status === "loading" ? (
-                    <div className="px-4 py-4 flex items-center justify-center text-sm text-gray-600">
-                      <span className="ml-2">Loading...</span>
-                    </div>
-                  ) : (
-                    <>
-                      <div className="px-4 py-3 border-b border-gray-100 bg-gray-50">
-                        <p className="text-sm font-medium text-gray-900">
-                          {session.user?.name || "Welcome back!"}
-                        </p>
-                        <p className="text-xs text-gray-500 truncate">
-                          {session.user?.email}
-                        </p>
-                      </div>
-                      <div className="py-1">
-                        <Link
-                          href="/upload"
-                          onClick={handleUploadClick}
-                          className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-black transition-colors">
-                          <Upload className="w-4 h-4" />
-                          <span>Upload Video</span>
-                        </Link>
+                  <div className="px-4 py-3 border-b border-gray-100 bg-gray-50">
+                    <p className="text-sm font-medium text-gray-900">
+                      {session.user?.name || "Welcome back!"}
+                    </p>
+                    <p className="text-xs text-gray-500 truncate">
+                      {session.user?.email}
+                    </p>
+                  </div>
+                  <div className="py-1">
+                    <Link
+                      href="/upload"
+                      onClick={handleUploadClick}
+                      className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-black transition-colors">
+                      <Upload className="w-4 h-4" />
+                      <span>Upload Video</span>
+                    </Link>
 
-                        <button
-                          onClick={handleSignOut}
-                          className="flex items-center gap-2 w-full px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors">
-                          <LogOut className="w-4 h-4" />
-                          <span>Sign Out</span>
-                        </button>
-                      </div>
-                    </>
-                  )}
+                    <button
+                      onClick={handleSignOut}
+                      className="flex items-center gap-2 w-full px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors">
+                      <LogOut className="w-4 h-4" />
+                      <span>Sign Out</span>
+                    </button>
+                  </div>
                 </div>
               )}
             </div>

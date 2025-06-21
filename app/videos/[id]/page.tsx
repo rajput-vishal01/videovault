@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { use, useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 
@@ -14,11 +14,14 @@ import { ArrowLeft, Share } from "lucide-react";
 export default function VideoDetailPage({
   params,
 }: {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }) {
   const { data: session } = useSession();
   const router = useRouter();
   const { showNotification } = useNotification();
+
+  // Use React's 'use' hook to unwrap the params Promise
+  const { id } = use(params);
 
   const [video, setVideo] = useState<IVideo | null>(null);
   const [loading, setLoading] = useState(true);
@@ -26,7 +29,7 @@ export default function VideoDetailPage({
   useEffect(() => {
     const fetchVideo = async () => {
       try {
-        const videoData = await apiClient.fetchVideoById(params.id);
+        const videoData = await apiClient.fetchVideoById(id);
         setVideo(videoData);
       } catch {
         showNotification("Video not found", "error");
@@ -36,7 +39,7 @@ export default function VideoDetailPage({
     };
 
     fetchVideo();
-  }, [params.id]);
+  }, [id]);
 
   const copyToClipboard = () => {
     navigator.clipboard.writeText(window.location.href);
