@@ -34,6 +34,54 @@ export default function VideoPlayer({
   const [showSettings, setShowSettings] = useState(false);
   const [playbackRate, setPlaybackRate] = useState(1);
   const [isLoading, setIsLoading] = useState(true);
+  const [controlsVisible, setControlsVisible] = useState(true);
+  const [isMobile, setIsMobile] = useState(false);
+  const hideControlsTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Detect mobile device
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth <= 768 || 'ontouchstart' in window);
+    };
+    
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
+  // Auto-hide controls on mobile when playing
+  useEffect(() => {
+    if (isMobile && isPlaying && controlsVisible) {
+      hideControlsTimeoutRef.current = setTimeout(() => {
+        setControlsVisible(false);
+      }, 3000); // Hide after 3 seconds
+    }
+
+    return () => {
+      if (hideControlsTimeoutRef.current) {
+        clearTimeout(hideControlsTimeoutRef.current);
+      }
+    };
+  }, [isMobile, isPlaying, controlsVisible]);
+
+  const showControlsTemporarily = () => {
+    setControlsVisible(true);
+    if (hideControlsTimeoutRef.current) {
+      clearTimeout(hideControlsTimeoutRef.current);
+    }
+  };
+
+  const handleVideoClick = () => {
+    if (isMobile) {
+      if (controlsVisible) {
+        togglePlay();
+      } else {
+        showControlsTemporarily();
+      }
+    } else {
+      togglePlay();
+    }
+  };
 
   useEffect(() => {
     const video = videoRef.current;
@@ -122,9 +170,15 @@ export default function VideoPlayer({
     return `${mins}:${secs < 10 ? "0" : ""}${secs}`;
   };
 
+  // Determine if controls should be visible
+  const shouldShowControls = isMobile ? controlsVisible : true;
+
   return (
     <div
-      className={`relative group overflow-hidden rounded-lg border border-gray-200 bg-black shadow-sm ${className}`}>
+      className={`relative group overflow-hidden rounded-lg border border-gray-200 bg-black shadow-sm ${className}`}
+      onMouseMove={!isMobile ? showControlsTemporarily : undefined}
+      onTouchStart={isMobile ? showControlsTemporarily : undefined}
+    >
       <video
         ref={videoRef}
         src={src}
@@ -132,7 +186,7 @@ export default function VideoPlayer({
         className="w-full h-full object-contain bg-black"
         preload="metadata"
         autoPlay={autoPlay}
-        onClick={togglePlay}
+        onClick={handleVideoClick}
       />
 
       {isLoading && (
@@ -146,14 +200,25 @@ export default function VideoPlayer({
           {!isPlaying && (
             <button
               onClick={togglePlay}
-              className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200 bg-black/20 hover:bg-black/30">
+              className={`absolute inset-0 flex items-center justify-center transition-opacity duration-200 bg-black/20 hover:bg-black/30 ${
+                isMobile 
+                  ? (shouldShowControls ? 'opacity-100' : 'opacity-0') 
+                  : 'opacity-0 group-hover:opacity-100'
+              }`}
+            >
               <div className="w-16 h-16 bg-white/90 hover:bg-white rounded-full flex items-center justify-center shadow-lg transition-all duration-200 hover:scale-105">
                 <Play className="w-6 h-6 ml-1 text-black" />
               </div>
             </button>
           )}
 
-          <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/80 via-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+          <div 
+            className={`absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/80 via-black/40 to-transparent transition-opacity duration-200 ${
+              isMobile 
+                ? (shouldShowControls ? 'opacity-100' : 'opacity-0') 
+                : 'opacity-0 group-hover:opacity-100'
+            }`}
+          >
             <div className="flex items-center mb-3">
               <input
                 type="range"
@@ -190,22 +255,24 @@ export default function VideoPlayer({
                       <Volume2 className="w-5 h-5" />
                     )}
                   </button>
-                  <input
-                    type="range"
-                    min="0"
-                    max="1"
-                    step="0.01"
-                    value={volume}
-                    onChange={handleVolumeChange}
-                    className="w-20 h-1 bg-white/30 rounded-full appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-3 [&::-webkit-slider-thumb]:h-3 [&::-webkit-slider-thumb]:bg-white [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:cursor-pointer hover:[&::-webkit-slider-thumb]:scale-110 [&::-webkit-slider-thumb]:transition-transform"
-                    style={{
-                      background: `linear-gradient(to right, white 0%, white ${
-                        volume * 100
-                      }%, rgba(255,255,255,0.3) ${
-                        volume * 100
-                      }%, rgba(255,255,255,0.3) 100%)`,
-                    }}
-                  />
+                  {!isMobile && (
+                    <input
+                      type="range"
+                      min="0"
+                      max="1"
+                      step="0.01"
+                      value={volume}
+                      onChange={handleVolumeChange}
+                      className="w-20 h-1 bg-white/30 rounded-full appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-3 [&::-webkit-slider-thumb]:h-3 [&::-webkit-slider-thumb]:bg-white [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:cursor-pointer hover:[&::-webkit-slider-thumb]:scale-110 [&::-webkit-slider-thumb]:transition-transform"
+                      style={{
+                        background: `linear-gradient(to right, white 0%, white ${
+                          volume * 100
+                        }%, rgba(255,255,255,0.3) ${
+                          volume * 100
+                        }%, rgba(255,255,255,0.3) 100%)`,
+                      }}
+                    />
+                  )}
                 </div>
 
                 {videoRef.current && (
